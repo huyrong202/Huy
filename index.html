@@ -1,84 +1,152 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trang May Mắn</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quà 1/6 của Heo</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f2f2f2;
-      padding: 20px;
+    * {
+      box-sizing: border-box;
     }
-    h1 {
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #fdeff9, #ec38bc);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 10px;
       color: #333;
     }
+
+    h1 {
+      color: #d63384;
+      font-size: 30px;
+      margin-bottom: 20px;
+    }
+
     .boxes {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       gap: 20px;
-      margin: 20px 0;
+      margin-bottom: 20px;
     }
+
     .box {
-      background: #4CAF50;
-      color: white;
       width: 100px;
       height: 100px;
-      line-height: 100px;
-      border-radius: 10px;
-      font-size: 20px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #444;
       cursor: pointer;
+      transition: all 0.3s ease;
       user-select: none;
     }
+
+    .box:hover {
+      background: #ffe6f0;
+    }
+
     .box.opened {
-      background: #2196F3;
-    }
-    #history {
-      margin-top: 30px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    button {
-      padding: 10px 20px;
-      margin-top: 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      background: #ff5722;
+      background: #28a745;
       color: white;
+      transform: scale(1.1);
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #history {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      margin-top: 30px;
+    }
+
+    #history h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #333;
+    }
+
+    #history ul {
+      list-style: none;
+      padding-left: 0;
+      text-align: left;
+    }
+
+    #history li {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    #message {
+      font-size: 20px;
+      margin-top: 15px;
+      color: #d63384;
+      font-weight: bold;
+      min-height: 30px;
     }
   </style>
 </head>
 <body>
-  <h1>Chọn 2 Ô May Mắn</h1>
+  <h1>🎁 Quà 1/6 của Heo 🐷</h1>
   <div class="boxes" id="boxes"></div>
+  <div id="message"></div>
   <button onclick="resetGame()">Chơi lại</button>
+
   <div id="history">
     <h2>Lịch sử mở ô</h2>
     <ul id="historyList"></ul>
   </div>
 
   <script>
-    const prizes = ["20K", "50K", "100K", "200K", "300K"];
-    const boxesContainer = document.getElementById("boxes");
-    const historyList = document.getElementById("historyList");
+    const allPrizes = ["10K", "20K", "50K", "100K", "200K", "300K"];
+    let shuffledPrizes = [];
     let openedCount = 0;
     let history = [];
+    let totalWinnings = 0;
+
+    const boxesContainer = document.getElementById("boxes");
+    const historyList = document.getElementById("historyList");
+    const message = document.getElementById("message");
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
 
     function renderBoxes() {
       boxesContainer.innerHTML = "";
-      prizes.forEach((prize, index) => {
+      shuffledPrizes = shuffle(allPrizes).slice(0, 5);
+      shuffledPrizes.forEach((prize, index) => {
         const box = document.createElement("div");
         box.classList.add("box");
-        box.dataset.index = index;
         box.innerText = "?";
+        box.dataset.index = index;
         box.addEventListener("click", () => {
           if (!box.classList.contains("opened") && openedCount < 2) {
             box.classList.add("opened");
@@ -86,6 +154,8 @@
             openedCount++;
             history.push(`Ô ${index + 1}: ${prize}`);
             updateHistory();
+            totalWinnings += parseInt(prize.replace("K", ""));
+            updateMessage();
           }
         });
         boxesContainer.appendChild(box);
@@ -101,9 +171,17 @@
       });
     }
 
+    function updateMessage() {
+      if (openedCount === 2) {
+        message.innerText = `🎉 Chúc mừng Heo đã nhận được +${totalWinnings}K! 🐷`;
+      }
+    }
+
     function resetGame() {
       openedCount = 0;
       history = [];
+      totalWinnings = 0;
+      message.innerText = "";
       updateHistory();
       renderBoxes();
     }
